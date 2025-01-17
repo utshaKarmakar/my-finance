@@ -124,6 +124,7 @@ The target audience for "My-Finance" includes young professionals managing their
 - **GET** `/api/reports` - Generate financial reports
 - **GET** `/api/charts` - Fetch data for visualization (e.g., spending trends, category-wise expenses)
 <br/>
+
 ## Milestones
 <table>
 	 <thead> 
