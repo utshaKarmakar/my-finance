@@ -98,6 +98,7 @@ The target audience for "My-Finance" includes young professionals managing their
   <li>Generate reports on user activity and app performance</li>
 </ul>
 <br/>
+
 ## API Endpoints
 
 ### Authentication
@@ -143,20 +144,6 @@ The target audience for "My-Finance" includes young professionals managing their
 					<li>API integration for adding and managing budgets</li>
 				</ul>
 			</td>
-		 </tr> 
-		 <tr> 
-			 <td>Checkpoint 2</td> 
-			 <td>
-				 <ul>
-					 <li>Customers My Account</li>
-					 <li>Order History</li>
-					 <li>Multi Item Cart functionality</li>
-					 <li>Payment options</li>
-					 <li>Approve or Reject new Restaurants registration by Admin</li>
-					 <li>Restaurant Dash Board</li>
-					 <li>Admin Dashboard</li>
-				 </ul>
-			 </td>   
 		 </tr> 
 		 <tr> 
 			 <td>Checkpoint 3</td> 
