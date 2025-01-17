@@ -147,7 +147,7 @@ The target audience for "My-Finance" includes young professionals managing their
 			</td>
 		 </tr> 
 		 <tr> 
-			 <td>Checkpoint 3</td> 
+			 <td>Checkpoint 2</td> 
 			 <td><ul>
 					 <li>Search and filter functionality for transactions</li>
 					 <li>Goal-setting and tracking features</li>
