@@ -1,6 +1,7 @@
 # my-finance
 A smart application to effortlessly record expenses, track budgets, and achieve your financial goals.
 
+<br/>
 ## Team members
 <table>
 	 <thead> 
@@ -34,13 +35,13 @@ A smart application to effortlessly record expenses, track budgets, and achieve 
  </table>
 
   
-
+<br/>
 ## Target Audience
 
 The target audience for "My-Finance" includes young professionals managing their budgets. Students can use it to track expenses and build financial discipline. Small business owners and freelancers can monitor income and cash flow. Families will benefit from organizing shared expenses and savings. It also helps budget-conscious individuals achieve financial goals easily.
 
   
-  
+<br/>  
 
 ## Tech Stack
 <table>
@@ -70,7 +71,7 @@ The target audience for "My-Finance" includes young professionals managing their
 	 </tbody> 
  </table>
 
-
+<br/>
 ## Project Features
 
 ### User Section
@@ -91,7 +92,7 @@ The target audience for "My-Finance" includes young professionals managing their
   <li>Oversee and manage user accounts and transactions</li>
   <li>Generate reports on user activity and app performance</li>
 </ul>
-
+<br/>
 ## API Endpoints
 
 ### Authentication
@@ -116,7 +117,7 @@ The target audience for "My-Finance" includes young professionals managing their
 ### Reporting and Analytics
 - **GET** `/api/reports` - Generate financial reports
 - **GET** `/api/charts` - Fetch data for visualization (e.g., spending trends, category-wise expenses)
-
+<br/>
 ## Milestones
 <table>
 	 <thead> 
