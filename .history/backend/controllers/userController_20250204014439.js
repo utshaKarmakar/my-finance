@@ -130,12 +130,7 @@ export const updateUser = async(req,res) => {
         });
 
         updatedUser.rows[0].password = undefined;
-
-        res.status(200).json({
-            status: "success",
-            message: "User information updated successfully",
-            user: updateUser.rows[0],
-        });
+        
 
     }catch(error){
         console.log(error);

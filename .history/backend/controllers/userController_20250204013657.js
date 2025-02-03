@@ -123,19 +123,10 @@ export const updateUser = async(req,res) => {
             });
         }
 
-        const updateUser = await pool.query({
-            text: `UPDATE tbluser SET firstname = $1, lastname = $2, country = $3, currency = $4, contact = $5, updatedat = CURRENT_TIMESTAMP
-            WHERE id = $ RETURNING *`,
-            values: [firstname, lastname, country, currency, contact, userId],
-        });
+        const updateUser = await pool.query
 
-        updatedUser.rows[0].password = undefined;
+        
 
-        res.status(200).json({
-            status: "success",
-            message: "User information updated successfully",
-            user: updateUser.rows[0],
-        });
 
     }catch(error){
         console.log(error);
