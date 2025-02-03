@@ -2,6 +2,7 @@ import { pool } from "../libs/database.js";
 import { comparePassword, createJWT, hashPassword } from "../libs/index.js";
 
 
+
 // Sign-Up
 export const signupUser = async(req,res) => {
     try{
@@ -48,6 +49,8 @@ export const signupUser = async(req,res) => {
     }
 };
 
+
+
 // Sing-In
 export const signinUser = async (req, res) => {
     try{
@@ -86,10 +89,8 @@ export const signinUser = async (req, res) => {
         res
         .status(200)
         .json({
-            status: "success",
-            message: "Login successfully",
-            user,
-            token,
+            status: "succe",
+            message: "Invalid email or password.",
         });
 
 

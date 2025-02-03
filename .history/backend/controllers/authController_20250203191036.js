@@ -1,5 +1,6 @@
 import { pool } from "../libs/database.js";
-import { comparePassword, createJWT, hashPassword } from "../libs/index.js";
+import { comparePassword, hashPassword } from "../libs/index.js";
+
 
 
 // Sign-Up
@@ -48,6 +49,8 @@ export const signupUser = async(req,res) => {
     }
 };
 
+
+
 // Sing-In
 export const signinUser = async (req, res) => {
     try{
@@ -79,20 +82,7 @@ export const signinUser = async (req, res) => {
             })
         }
 
-        const token = createJWT(user.id);
-
-        user.password = undefined;
-
-        res
-        .status(200)
-        .json({
-            status: "success",
-            message: "Login successfully",
-            user,
-            token,
-        });
-
-
+        const token = crea
     }catch(error){
         console.log(error);
         res.status(500).json({

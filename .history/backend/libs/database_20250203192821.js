@@ -7,5 +7,5 @@ const {Pool} = pg;
 
 export const pool = new Pool({
     connectionString: process.env.DATABASE_URI,
-    ssl: { rejectUnauthorized: false }, // Required for Render
+    ssl: { rejectUnauthorized: false },
 });
