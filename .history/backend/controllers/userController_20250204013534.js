@@ -123,18 +123,35 @@ export const updateUser = async(req,res) => {
             });
         }
 
-        const updateUser = await pool.query({
-            text: `UPDATE tbluser SET firstname = $1, lastname = $2, country = $3, currency = $4, contact = $5, updatedat = CURRENT_TIMESTAMP
-            WHERE id = $ RETURNING *`,
-            values: [firstname, lastname, country, currency, contact, userId],
-        });
+        if(newPassword !== confirmPassword){
+            return res
+             .status(404)
+             .json({
+                status: "failed",
+                message: "New Password does not match",
+            });
+        }
 
-        updatedUser.rows[0].password = undefined;
+        const isMatch = await comparePassword(currentPassword, user?.password);
+        if(!isMatch){
+            return res
+             .status(401)
+             .json({
+                status: "failed",
+                message: "Invalid current password.",
+            });
+        }
+
+        const hashedPassword = await hashPassword(newPassword);
+
+        await pool.query({
+            text: `UPDATE tbluser SET password= $1 WHERE id=$2`,
+            values: [hashedPassword,userId],
+        });
 
         res.status(200).json({
             status: "success",
-            message: "User information updated successfully",
-            user: updateUser.rows[0],
+            message: "Password changed successfully",
         });
 
     }catch(error){
