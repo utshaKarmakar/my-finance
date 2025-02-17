@@ -1,33 +1,32 @@
 
 import {pool} from "../libs/database.js";
-
 export const getAccounts=async(req ,res)=>{
+try{
+    const {userId} =req.body.user;
+    const accounts =await pool.query({
+        text:`SELECT * FROM tblaccount WHERE user_id=$1`,
+        values:[userId],
+    });
+    res.status(200).json({
+        status:"success",
+        data:accounts.rows,
+    });
+}
+catch(error){
+    console.log(error);
+    res.status(500).json({status:"failed",message:error.message});
+}
+};
+
+
+export const createAccount=async(req ,res)=>{
     try{
         const {userId} =req.body.user;
-        const accounts =await pool.query({
-            text:`SELECT * FROM tblaccount WHERE user_id=$1`,
-            values:[userId],
+        const {name,amount,account_number}=req.body;
+        const accountExistQuery =({
+            text:`SELECT * FROM tblaccount WHERE account_name =$1 AND user_id=$2 `,
+            values:[name,userId],
         });
-        res.status(200).json({
-            status:"success",
-            data:accounts.rows,
-        });
-    }
-    catch(error){
-        console.log(error);
-        res.status(500).json({status:"failed",message:error.message});
-    }
-    };
-
-
-    export const createAccount=async(req ,res)=>{
-        try{
-            const {userId} =req.body.user;
-            const {name,amount,account_number}=req.body;
-            const accountExistQuery =({
-                text:`SELECT * FROM tblaccount WHERE account_name =$1 AND user_id=$2 `,
-                values:[name,userId],
-            });
           const accountExistResult= await pool.query(accountExistQuery);
           const accountExist =accountExistResult.rows[0];
               if(accountExist){
@@ -45,12 +44,12 @@ export const getAccounts=async(req ,res)=>{
 
               const userAccounts=Array.isArray(name)?name:[name];
               
-        const updateUserAccountQuery = {
-        text:`UPDATE tbluser SET accounts = array_cat (accounts, $1), updatedat = CURRENT_TIMESTAMP WHERE id = $2
-        RETURNING *`,
-        values: [userAccounts, userId],
-                    
-        };
+const updateUserAccountQuery = {
+text:`UPDATE tbluser SET accounts = array_cat (accounts, $1), updatedat = CURRENT_TIMESTAMP WHERE id = $2
+RETURNING *`,
+values: [userAccounts, userId],
+               
+};
         await pool.query(updateUserAccountQuery);
         // Add initial deposit transaction
         const description=account.account_name + "(Initial Deposit)";
@@ -67,9 +66,9 @@ export const getAccounts=async(req ,res)=>{
         };
             await pool.query(initialDepositQuery);
             res.status(201).json({
-                status: "success",
-                message: account.account_name + "Account created successfully",
-                data: account,
+            status: "success",
+            message: account.account_name + "Account created successfully",
+            data: account,
         });
 
         }

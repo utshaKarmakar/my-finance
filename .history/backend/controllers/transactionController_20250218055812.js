@@ -230,8 +230,8 @@ if (Number (amount) <= 0)
     //cehck account details and balance for the 'from_account'
     
         const fromAccountResult = await pool.query({
-            text: `SELECT * FROM tblaccount WHERE id = $1`,
-            values: [from_account],
+        text: `SELECT * FROM tblaccount WHERE id = $1`,
+        values: [from_account],
         });
         const fromAccount = fromAccountResult.rows[0];
             if (!fromAccount) {

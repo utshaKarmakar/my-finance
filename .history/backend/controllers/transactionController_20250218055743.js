@@ -230,22 +230,22 @@ if (Number (amount) <= 0)
     //cehck account details and balance for the 'from_account'
     
         const fromAccountResult = await pool.query({
-            text: `SELECT * FROM tblaccount WHERE id = $1`,
-            values: [from_account],
+        text: `SELECT * FROM tblaccount WHERE id = $1`,
+        values: [from_account],
         });
         const fromAccount = fromAccountResult.rows[0];
-            if (!fromAccount) {
-            return res.status(404).json({
-            status: "failed",
-            message: "Account information not found.",
-            });
+        if (!fromAccount) {
+        return res.status(404).json({
+        status: "failed",
+        message: "Account information not found.",
+        });
         }
         if (newAmount > fromAccount.account_balance) {
 
         return res.status(403).json({
-            status: "failed",
-            message: "Transfer failed. Insufficient account balance.",
-            });
+        status: "failed",
+        message: "Transfer failed. Insufficient account balance.",
+        });
         }
 
         //Begin transaction
@@ -253,8 +253,8 @@ if (Number (amount) <= 0)
         await pool.query("BEGIN");
         // Transfer from account
         await pool.query({
-            text: `UPDATE tblaccount SET account_balance = account_balance - $1, updatedat = CURRENT_TIMESTAMP WHERE id = $2`,
-            values: [newAmount, from_account],
+        text: `UPDATE tblaccount SET account_balance = account_balance - $1, updatedat = CURRENT_TIMESTAMP WHERE id = $2`,
+        values: [newAmount, from_account],
         });
         // Transfer to account
         const toAccount = await pool.query({

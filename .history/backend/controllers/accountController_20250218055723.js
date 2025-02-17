@@ -1,7 +1,6 @@
 
 import {pool} from "../libs/database.js";
-
-export const getAccounts=async(req ,res)=>{
+    export const getAccounts=async(req ,res)=>{
     try{
         const {userId} =req.body.user;
         const accounts =await pool.query({

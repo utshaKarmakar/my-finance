@@ -1,7 +1,6 @@
 
 import {pool} from "../libs/database.js";
-
-export const getAccounts=async(req ,res)=>{
+    export const getAccounts=async(req ,res)=>{
     try{
         const {userId} =req.body.user;
         const accounts =await pool.query({
@@ -21,13 +20,13 @@ export const getAccounts=async(req ,res)=>{
 
 
     export const createAccount=async(req ,res)=>{
-        try{
-            const {userId} =req.body.user;
-            const {name,amount,account_number}=req.body;
-            const accountExistQuery =({
-                text:`SELECT * FROM tblaccount WHERE account_name =$1 AND user_id=$2 `,
-                values:[name,userId],
-            });
+    try{
+        const {userId} =req.body.user;
+        const {name,amount,account_number}=req.body;
+        const accountExistQuery =({
+            text:`SELECT * FROM tblaccount WHERE account_name =$1 AND user_id=$2 `,
+            values:[name,userId],
+        });
           const accountExistResult= await pool.query(accountExistQuery);
           const accountExist =accountExistResult.rows[0];
               if(accountExist){
