@@ -278,28 +278,32 @@ if (Number (amount) <= 0)
             ],
         });
 
-        const description1 = `Transfer (${fromAccount.account_name}-${toAccount.rows[0].account_name})`;
-        await pool.query({
-            text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
-            values: [
-            userId,
-            description,
-            "income",
-            "Completed",
-            amount,
-            fromAccount.account_name,
-                ],
-            });
+const description1 = `Transfer (${fromAccount.account_name}-${toAccount.rows[0].account_name})`;
+await pool.query({
+    text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
+    values: [
+    userId,
+    description,
+    "income",
+    "Completed",
+    amount,
+    fromAccount.account_name,
+        ],
+    });
 
-        await pool.query("COMMIT");
-        res.status(200).json({
-            status:"success",
-            message:"Transaction completed successfully"
-        });
+    await pool.query("COMMIT");
+    res.status(200).json({
+        status:"success",
+        message:"Transaction completed successfully"
+    });
 
-            } catch (error) {
-            console.log(error);
-            res.status(500).json({ status: "failed", message: error.message });
-        }
+
+
+
+
+    } catch (error) {
+    console.log(error);
+    res.status(500).json({ status: "failed", message: error.message });
+}
 
 };

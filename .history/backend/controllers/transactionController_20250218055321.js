@@ -291,15 +291,19 @@ if (Number (amount) <= 0)
                 ],
             });
 
-        await pool.query("COMMIT");
-        res.status(200).json({
-            status:"success",
-            message:"Transaction completed successfully"
-        });
+    await pool.query("COMMIT");
+    res.status(200).json({
+        status:"success",
+        message:"Transaction completed successfully"
+    });
 
-            } catch (error) {
-            console.log(error);
-            res.status(500).json({ status: "failed", message: error.message });
-        }
+
+
+
+
+    } catch (error) {
+    console.log(error);
+    res.status(500).json({ status: "failed", message: error.message });
+}
 
 };

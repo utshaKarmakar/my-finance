@@ -297,9 +297,9 @@ if (Number (amount) <= 0)
             message:"Transaction completed successfully"
         });
 
-            } catch (error) {
-            console.log(error);
-            res.status(500).json({ status: "failed", message: error.message });
-        }
+    } catch (error) {
+    console.log(error);
+    res.status(500).json({ status: "failed", message: error.message });
+}
 
 };
