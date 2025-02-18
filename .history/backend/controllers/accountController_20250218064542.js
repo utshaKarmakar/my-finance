@@ -1,3 +1,4 @@
+
 import {pool} from "../libs/database.js";
 
 export const getAccounts=async(req ,res)=>{
@@ -11,11 +12,12 @@ export const getAccounts=async(req ,res)=>{
             status:"success",
             data:accounts.rows,
         });
-    } catch(error){
+    }
+    catch(error){
         console.log(error);
         res.status(500).json({status:"failed",message:error.message});
     }
-};
+    };
 
 
 export const createAccount=async(req ,res)=>{
@@ -82,10 +84,10 @@ export const createAccount=async(req ,res)=>{
 
 
 export const addMoneyToAccount=async(req ,res)=>{ 
-    try{
-        const {userId}=req.body.user;
-        const {id}=req.params;
-        const {amount}=req.body;
+try{
+    const {userId}=req.body.user;
+    const {id}=req.params;
+    const {amount}=req.body;
 
        
         const newAmount = Number(amount);
@@ -97,25 +99,26 @@ export const addMoneyToAccount=async(req ,res)=>{
         const description= accountInformation.account_name + "(Deposit)";    
 
 
-        const transQuery = {
-            text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            values: [
-                userId,
-                description,
-                "income",
-                "Completed",
-                amount,
-                accountInformation.account_name,
-            ],
-        };
-        await pool.query(transQuery);
-        
-        res.status(200).json({
-        status: "success",
-        message: "Operation completed successfully", data: accountInformation,
-        });
+    const transQuery = {
+        text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        values: [
+            userId,
+            description,
+            "income",
+            "Completed",
+            amount,
+            accountInformation.account_name,
+        ],
+    };
+    await pool.query(transQuery);
+    
+    res.status(200).json({
+    status: "success",
+    message: "Operation completed successfully", data: accountInformation,
+    });
 
-    }catch(error){
+    }
+    catch(error){
         console.log(error);
         res.status(500).json({status:"failed",message:error.message});
     }

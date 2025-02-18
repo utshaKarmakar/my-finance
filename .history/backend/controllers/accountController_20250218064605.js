@@ -1,3 +1,4 @@
+
 import {pool} from "../libs/database.js";
 
 export const getAccounts=async(req ,res)=>{
@@ -11,11 +12,12 @@ export const getAccounts=async(req ,res)=>{
             status:"success",
             data:accounts.rows,
         });
-    } catch(error){
+    }
+    catch(error){
         console.log(error);
         res.status(500).json({status:"failed",message:error.message});
     }
-};
+    };
 
 
 export const createAccount=async(req ,res)=>{
@@ -114,7 +116,7 @@ export const addMoneyToAccount=async(req ,res)=>{
         status: "success",
         message: "Operation completed successfully", data: accountInformation,
         });
-
+        
     }catch(error){
         console.log(error);
         res.status(500).json({status:"failed",message:error.message});

@@ -181,7 +181,8 @@ export const addTransaction = async (req, res) => {
                 message:"Transaction completed successfully"
             });
 
-    } catch (error) {
+    } 
+    catch (error) {
         console.log(error);
         res.status(500).json({ status: "failed", message: error.message });
     }
@@ -189,6 +190,7 @@ export const addTransaction = async (req, res) => {
 
 export const transferMoneyToAccount = async (req, res) => { 
     try {
+
         const {userId}=req.body.user;
         const {from_account,to_account,amount}=req.body;
 
@@ -204,7 +206,8 @@ export const transferMoneyToAccount = async (req, res) => {
             .status(403)
             .json({ status: "failed", message: "Amount should be grater than 0." });
 
-        //check account details and balance for the 'from_account'
+    //cehck account details and balance for the 'from_account'
+    
         const fromAccountResult = await pool.query({
             text: `SELECT * FROM tblaccount WHERE id = $1`,
             values: [from_account],
@@ -245,10 +248,10 @@ export const transferMoneyToAccount = async (req, res) => {
         await pool.query({
         text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
         values: [
-                userId,
-                description,
-                "expense",
-                "Completed",
+            userId,
+            description,
+            "expense",
+            "Completed",
                 amount,
                 fromAccount.account_name,
             ],
@@ -258,12 +261,12 @@ export const transferMoneyToAccount = async (req, res) => {
         await pool.query({
             text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
             values: [
-                userId,
-                description,
-                "income",
-                "Completed",
-                amount,
-                fromAccount.account_name,
+            userId,
+            description,
+            "income",
+            "Completed",
+            amount,
+            fromAccount.account_name,
                 ],
             });
 
@@ -273,8 +276,9 @@ export const transferMoneyToAccount = async (req, res) => {
             message:"Transaction completed successfully"
         });
 
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: "failed", message: error.message });
-    }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ status: "failed", message: error.message });
+        }
+
 };

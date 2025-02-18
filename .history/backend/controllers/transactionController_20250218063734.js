@@ -40,81 +40,88 @@ export const getTransactions =async (req, res) => {
  
 export const getDashboardInformation = async (req, res) => {
     try {
-        const {userId}=req.body.user;
+
+    const {userId}=req.body.user;
 
 
-        const totalIncome=0;
-        const totalExpense=0;
+    const totalIncome=0;
+    const totalExpense=0;
 
-        const transactionsResult = await pool.query({
-                text: `SELECT type, SUM(amount) AS totalAmount FROM tbltransaction WHERE user_id = $1 GROUP BY type`, 
-                values: [userId],
-            });
-            const transactions =transactionsResult.rows;
-            transactions.forEach((transaction) => { 
-                if (transaction.type === "income") {
-                    totalIncome += transaction.totalamount; 
-                } else {
-                    totalExpense += transaction.totalamount;
-                }
-            });
-
-
-            const avaliableBalance=totalIncome-totalExpense;
-
-            //aggregate transactions to sum by type and group by month
-            const year = new Date().getFullYear();
-
-            const start_Date = new Date(year, 0, 1); // January 1st of the year
-            const end_Date = new Date(year, 11, 31, 23, 59, 59); // December 31st of the year
-
-            const result = await pool.query({
-                text:
-                    `SELECT EXTRACT (MONTH FROM createdat) AS month,type,SUM(amount) AS totalAmount
-                    FROM tbltransaction
-                    WHERE user_id = $1
-                    AND createdat BETWEEN $2 AND $3 GROUP BY EXTRACT (MONTH FROM createdat), type`,
-                values: [userId, start_Date, end_Date],
-            });
-
-            //organise data
-            const data=new Array(12).fill().map((__,index)=>{
-
-            const monthData=result.rows.filter((item)=>parseInt(item.month)==index+1);
-
-            const income = monthData.find((item) => item.type === 'income')?.totalAmount || 0;
-            const expense = monthData.find((item) => item.type === 'expense')?.totalAmount || 0;
-            
-
-            return{label:getMonthName(index),income,expense,};
-
-            });      
-
-
-        // Fetch last transactions
-        const lastTransactionsResult = await pool.query({
-            text: `SELECT * FROM tbltransaction WHERE user_id = $1 ORDER BY id DESC LIMIT 5`,
-            values: [userId],
-            });
-            const lastTransactions = lastTransactionsResult.rows;
-            // Fetch last accounts
-            const lastAccountResult = await pool.query({
-            text: `SELECT * FROM tblaccount WHERE user_id = $1 ORDER BY id DESC LIMIT 4`,
+    const transactionsResult = await pool.query({
+            text: `SELECT type, SUM(amount) AS totalAmount FROM tbltransaction WHERE user_id = $1 GROUP BY type`, 
             values: [userId],
         });
-
-        const lastAccount = lastAccountResult.rows;
-
-        res.status(200).json({
-            status:"success",
-            avaliableBalance,
-            totalIncome,
-            totalExpense,
-            ChartData:data,
-            lastTransactions,
-            lastAccount,
-
+        const transactions =transactionsResult.rows;
+        transactions.forEach((transaction) => { 
+            if (transaction.type === "income") {
+                totalIncome += transaction.totalamount; 
+            } else {
+                totalExpense += transaction.totalamount;
+            }
         });
+
+
+        const avaliableBalance=totalIncome-totalExpense;
+
+        //aggregate transactions to sum by type and group by month
+        const year = new Date().getFullYear();
+
+        const start_Date = new Date(year, 0, 1); // January 1st of the year
+        const end_Date = new Date(year, 11, 31, 23, 59, 59); // December 31st of the year
+
+        const result = await pool.query({
+            text:
+                `SELECT EXTRACT (MONTH FROM createdat) AS month,type,SUM(amount) AS totalAmount
+                FROM tbltransaction
+                WHERE user_id = $1
+                AND createdat BETWEEN $2 AND $3 GROUP BY
+                EXTRACT (MONTH FROM createdat), type`,
+        values: [userId, start_Date, end_Date],
+        });
+
+        //organise data
+        const data=new Array(12).fill().map((__,index)=>{
+
+        const monthData=result.rows.filter((item)=>parseInt(item.month)==index+1);
+
+        const income =monthData.find((item)=>item.type==='income')?.totalIncome ||0 ;
+
+        const expense =monthData.find((item)=>item.type==='expense')?.totalIncome ||0 ;
+
+
+        return{
+            label:getMonthName(index),
+            income,
+            expense,
+        };
+        } );      
+
+
+    // Fetch last transactions
+    const lastTransactionsResult = await pool.query({
+        text: `SELECT * FROM tbltransaction WHERE user_id = $1 ORDER BY id DESC LIMIT 5`,
+        values: [userId],
+        });
+        const lastTransactions = lastTransactionsResult.rows;
+        // Fetch last accounts
+        const lastAccountResult = await pool.query({
+        text: `SELECT * FROM tblaccount WHERE user_id = $1 ORDER BY id DESC LIMIT 4`,
+        values: [userId],
+    });
+
+    const lastAccount = lastAccountResult.rows;
+
+    res.status(200).json({
+        status:"success",
+        avaliableBalance,
+        totalIncome,
+        totalExpense,
+        ChartData:data,
+        lastTransactions,
+        lastAccount,
+
+    });
+
 
     } catch (error) {
         console.log(error);
@@ -157,22 +164,22 @@ export const addTransaction = async (req, res) => {
         }
 
 
-        if(accountInfo.account_balance<=0 ||accountInfo.account_balance<Number(amount)){
-            return res
-            .status(404)
-            .json({ status: "failed", message: "failed.Insufficient account balance." });
-            }
-            //Begin Transaction
-            await pool.query("BEGIN");
+    if(accountInfo.account_balance<=0 ||accountInfo.account_balance<Number(amount)){
+        return res
+        .status(404)
+        .json({ status: "failed", message: "failed.Insufficient account balance." });
+        }
+        //Begin Transaction
+        await pool.query("BEGIN");
 
-            await pool.query({
-                text: `UPDATE tblaccount SET account_balance = account_balance - $1, updatedat = CURRENT_TIMESTAMP WHERE id = $2`,
-                values: [amount, account_id],
+        await pool.query({
+            text: `UPDATE tblaccount SET account_balance = account_balance - $1, updatedat = CURRENT_TIMESTAMP WHERE id = $2`,
+            values: [amount, account_id],
             });
-
             await pool.query({
-                text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
-                values: [userId, description, "expense", "Completed", amount, source],
+            
+            text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
+            values: [userId, description, "expense", "Completed", amount, source],
             });
 
             await pool.query("COMMIT");
@@ -181,7 +188,8 @@ export const addTransaction = async (req, res) => {
                 message:"Transaction completed successfully"
             });
 
-    } catch (error) {
+        } 
+    catch (error) {
         console.log(error);
         res.status(500).json({ status: "failed", message: error.message });
     }
@@ -189,6 +197,7 @@ export const addTransaction = async (req, res) => {
 
 export const transferMoneyToAccount = async (req, res) => { 
     try {
+
         const {userId}=req.body.user;
         const {from_account,to_account,amount}=req.body;
 
@@ -204,7 +213,8 @@ export const transferMoneyToAccount = async (req, res) => {
             .status(403)
             .json({ status: "failed", message: "Amount should be grater than 0." });
 
-        //check account details and balance for the 'from_account'
+    //cehck account details and balance for the 'from_account'
+    
         const fromAccountResult = await pool.query({
             text: `SELECT * FROM tblaccount WHERE id = $1`,
             values: [from_account],
@@ -245,10 +255,10 @@ export const transferMoneyToAccount = async (req, res) => {
         await pool.query({
         text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
         values: [
-                userId,
-                description,
-                "expense",
-                "Completed",
+            userId,
+            description,
+            "expense",
+            "Completed",
                 amount,
                 fromAccount.account_name,
             ],
@@ -258,12 +268,12 @@ export const transferMoneyToAccount = async (req, res) => {
         await pool.query({
             text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
             values: [
-                userId,
-                description,
-                "income",
-                "Completed",
-                amount,
-                fromAccount.account_name,
+            userId,
+            description,
+            "income",
+            "Completed",
+            amount,
+            fromAccount.account_name,
                 ],
             });
 
@@ -273,8 +283,9 @@ export const transferMoneyToAccount = async (req, res) => {
             message:"Transaction completed successfully"
         });
 
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: "failed", message: error.message });
-    }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ status: "failed", message: error.message });
+        }
+
 };

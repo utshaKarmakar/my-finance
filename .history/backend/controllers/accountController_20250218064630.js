@@ -1,3 +1,4 @@
+
 import {pool} from "../libs/database.js";
 
 export const getAccounts=async(req ,res)=>{

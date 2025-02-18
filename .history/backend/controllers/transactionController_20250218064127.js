@@ -189,6 +189,7 @@ export const addTransaction = async (req, res) => {
 
 export const transferMoneyToAccount = async (req, res) => { 
     try {
+
         const {userId}=req.body.user;
         const {from_account,to_account,amount}=req.body;
 
@@ -245,10 +246,10 @@ export const transferMoneyToAccount = async (req, res) => {
         await pool.query({
         text: `INSERT INTO tbltransaction (user_id, description, type, status, amount, source) VALUES ($1, $2, $3, $4, $5, $6)`,
         values: [
-                userId,
-                description,
-                "expense",
-                "Completed",
+            userId,
+            description,
+            "expense",
+            "Completed",
                 amount,
                 fromAccount.account_name,
             ],
@@ -273,8 +274,9 @@ export const transferMoneyToAccount = async (req, res) => {
             message:"Transaction completed successfully"
         });
 
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: "failed", message: error.message });
-    }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ status: "failed", message: error.message });
+        }
+
 };
