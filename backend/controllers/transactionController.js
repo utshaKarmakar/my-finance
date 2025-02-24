@@ -10,85 +10,89 @@ export const getTransactions =async (req, res) => {
         const sevenDaysAgo=_sevenDaysAgo.toISOString().split("T")[0];
 
         const {df,dt,s}=req.query;
-        const {userId}=req.body.userId;
+
+        if (!req.body.user || !req.body.user.userId) {
+            return res.status(401).json({ status: "auth_failed", message: "User not authenticated" });
+        }
+        const { userId } = req.body.user;
+
         const startDate =new Date(df || sevenDaysAgo );
         const endDate =new Date(df || new Date() );
 
 
-    const transactions = await pool.query({
-        text: `SELECT * FROM tbltransaction 
-            WHERE user_id = $1 
-                AND createdat BETWEEN $2 AND $3 
-                AND (description ILIKE $4 
-                    OR status ILIKE $4 
-                    OR source ILIKE $4) 
-            ORDER BY id DESC`,
-        values: [userId, startDate, endDate, `%${s}%`],
-    });
+        const transactions = await pool.query({
+            text: `SELECT * FROM tbltransaction 
+                WHERE user_id = $1 
+                    AND createdat BETWEEN $2 AND $3 
+                    AND (description ILIKE $4 
+                        OR status ILIKE $4 
+                        OR source ILIKE $4) 
+                ORDER BY id DESC`,
+            values: [userId, startDate, endDate, `%${s}%`],
+        });
 
-    res.status(200).json({
-        status: "success",
-        data: transactions.rows,
-    });
-
+        res.status(200).json({
+            status: "success",
+            data: transactions.rows,
+        });
 
     } catch (error) {
         console.log(error);
         res.status(500).json({ status: "failed", message: error.message });
         }
-    };
+};
  
 export const getDashboardInformation = async (req, res) => {
     try {
         const {userId}=req.body.user;
 
 
-        const totalIncome=0;
-        const totalExpense=0;
+        let totalIncome=0;
+        let totalExpense=0;
 
         const transactionsResult = await pool.query({
                 text: `SELECT type, SUM(amount) AS totalAmount FROM tbltransaction WHERE user_id = $1 GROUP BY type`, 
                 values: [userId],
-            });
-            const transactions =transactionsResult.rows;
-            transactions.forEach((transaction) => { 
-                if (transaction.type === "income") {
-                    totalIncome += transaction.totalamount; 
-                } else {
-                    totalExpense += transaction.totalamount;
-                }
-            });
+        });
+        const transactions =transactionsResult.rows;
+        transactions.forEach((transaction) => { 
+            if (transaction.type === "income") {
+                totalIncome += transaction.totalamount; 
+            } else {
+                totalExpense += transaction.totalamount;
+            }
+        });
 
 
-            const avaliableBalance=totalIncome-totalExpense;
+        const avaliableBalance=totalIncome-totalExpense;
 
-            //aggregate transactions to sum by type and group by month
-            const year = new Date().getFullYear();
+        //aggregate transactions to sum by type and group by month
+        const year = new Date().getFullYear();
 
-            const start_Date = new Date(year, 0, 1); // January 1st of the year
-            const end_Date = new Date(year, 11, 31, 23, 59, 59); // December 31st of the year
+        const start_Date = new Date(year, 0, 1); // January 1st of the year
+        const end_Date = new Date(year, 11, 31, 23, 59, 59); // December 31st of the year
 
-            const result = await pool.query({
-                text:
-                    `SELECT EXTRACT (MONTH FROM createdat) AS month,type,SUM(amount) AS totalAmount
-                    FROM tbltransaction
-                    WHERE user_id = $1
-                    AND createdat BETWEEN $2 AND $3 GROUP BY EXTRACT (MONTH FROM createdat), type`,
-                values: [userId, start_Date, end_Date],
-            });
+        const result = await pool.query({
+            text:
+                `SELECT EXTRACT (MONTH FROM createdat) AS month,type,SUM(amount) AS totalAmount
+                FROM tbltransaction
+                WHERE user_id = $1
+                AND createdat BETWEEN $2 AND $3 GROUP BY EXTRACT (MONTH FROM createdat), type`,
+            values: [userId, start_Date, end_Date],
+        });
 
-            //organise data
-            const data=new Array(12).fill().map((__,index)=>{
+        //organise data
+        const data=new Array(12).fill().map((__,index)=>{
 
-            const monthData=result.rows.filter((item)=>parseInt(item.month)==index+1);
+        const monthData=result.rows.filter((item)=>parseInt(item.month)==index+1);
 
-            const income = monthData.find((item) => item.type === 'income')?.totalAmount || 0;
-            const expense = monthData.find((item) => item.type === 'expense')?.totalAmount || 0;
-            
+        const income = monthData.find((item) => item.type === 'income')?.totalAmount || 0;
+        const expense = monthData.find((item) => item.type === 'expense')?.totalAmount || 0;
+        
 
-            return{label:getMonthName(index),income,expense,};
+        return{label:getMonthName(index),income,expense,};
 
-            });      
+        });      
 
 
         // Fetch last transactions
@@ -250,7 +254,8 @@ export const transferMoneyToAccount = async (req, res) => {
                 "expense",
                 "Completed",
                 amount,
-                fromAccount.account_name,
+                toAccount.rows[0].account_name
+                //fromAccount.account_name,
             ],
         });
 

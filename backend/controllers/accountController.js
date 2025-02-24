@@ -21,6 +21,15 @@ export const getAccounts=async(req ,res)=>{
 export const createAccount=async(req ,res)=>{
     try{
         const {userId} =req.body.user;
+
+        const userExists = await pool.query("SELECT * FROM tbluser WHERE id = $1", [userId]); 
+
+        if (userExists.rowCount === 0) {
+            return res.status(401).json({ status: "auth_failed", message: "User not found" });
+        }
+
+        
+
         const {name,amount,account_number}=req.body;
         const accountExistQuery =({
             text:`SELECT * FROM tblaccount WHERE account_name =$1 AND user_id=$2 `,
@@ -40,7 +49,7 @@ export const createAccount=async(req ,res)=>{
             text:`INSERT INTO tblaccount(user_id,account_name,account_number,account_balance) VALUES($1,$2,$3,$4)RETURNING *`,
             values:[userId,name,account_number,amount],
         })
-        const account =createAccountResult.rows[0];
+        const account = createAccountResult.rows[0];
 
         const userAccounts=Array.isArray(name)?name:[name];
               
