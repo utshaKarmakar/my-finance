@@ -1,35 +1,48 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {Navigate, Outlet, Route, Routes} from "react-router-dom"
+import SignIn from "./pages/auth/sign-in";
+import SignUp from "./pages/auth/sign-up";
+import Dashboard from "./pages/dashboard";
+import Settings from "./pages/settings";
+import AccountPage from "./pages/account-page";
+import Transactions from "./pages/transactions";
+import { useStore } from 'zustand';
+
+const RootLayout = ()=> {
+  const {user} = useStore((state)=> state);
+  console.log(user);
+
+  return !user ? (
+    <Navigate to="sign-in" replace={true}/>) : 
+    (<>
+    <div>
+      <Outlet/>
+    </div>
+  </>
+  );
+};
+
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
+   <main>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Routes>
+          <Route element={<RootLayout/>}>
+            <Route path="/" element={<Navigate to="/overview" />} />
+            <Route path="/overview" element={<Dashboard/>} />
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/settings" element={<Settings/>} />
+            <Route path="/account" element={<AccountPage/>} />
+          </Route>
+          <Route path="/sign-in" element={<SignIn/>} />
+          <Route path="/sign-up" element={<SignUp/>} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+   </main>
   )
 }
 
-export default App
+export default App;
