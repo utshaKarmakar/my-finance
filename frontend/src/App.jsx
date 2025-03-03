@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState ,useEffect} from 'react'
 import {Navigate, Outlet, Route, Routes} from "react-router-dom"
 import SignIn from "./pages/auth/sign-in";
 import SignUp from "./pages/auth/sign-up";
@@ -31,8 +31,16 @@ setAuthToken(user?.token||"")
 };
 
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const theme = useStore((state) => state.theme);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [theme]);
 
   return (
    <main>
