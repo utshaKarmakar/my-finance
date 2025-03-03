@@ -11,6 +11,7 @@ import  {create}  from 'zustand';
 
 import { setAuthToken } from './libs/apiCall';
 import { Toaster } from 'sonner';
+import Navbar from './components/navbar';
 
 const RootLayout = ()=> {
   const {user} = useStore((state)=> state);
@@ -20,6 +21,7 @@ setAuthToken(user?.token||"")
   return !user ? (
     <Navigate to="sign-in" replace={true}/>) : 
     (<>
+    <Navbar/>
     <div className="min-h-[cal(h-screen-100px)]">
       <Outlet/>
     </div>
@@ -40,7 +42,7 @@ function App() {
             <Route path="/overview" element={<Dashboard/>} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/settings" element={<Settings/>} />
-            <Route path="/account" element={<AccountPage/>} />
+            <Route path="/accounts" element={<AccountPage/>} />
           </Route>
           <Route path="/sign-in" element={<SignIn/>} />
           <Route path="/sign-up" element={<SignUp/>} />

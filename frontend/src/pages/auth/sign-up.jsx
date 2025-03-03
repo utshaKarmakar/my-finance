@@ -11,12 +11,14 @@ import Input from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import {BiLoader} from "react-icons/bi"
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import api from "../../libs/apiCall";
 
 
 const RegisterSchema = z.object({
   email: z.string({ required_error: "Email is required" }).email({ message: "Invalid email address" }),
   firstName: z.string({ required_error: "Name is required" }).min(3,"Name is Required"),
-  password: z.string({ required_error: "Password is required" }).min(1, "Password is required"),
+  password: z.string({ required_error: "Password is required" }).min(8, "Password must be at least 8 characters"),
 });
 
 const SignUp = () => {
@@ -37,7 +39,24 @@ const SignUp = () => {
   }, [user, navigate]);
 
   const onSubmit = async (data) => {
-    console.log(data);
+    console.log(data); 
+
+    try{
+      setLoading(true)
+      const {data:res}=await api.post("/auth/sign-up",data);
+
+     if(res?.user){
+      toast.success("Account created successfully.You can now login.");
+      setTimeout(()=>{
+                 navigate("/sign-in");
+      },1000); 
+        }
+    }catch(error){
+      console.log(error);
+      toast.error(error?.response?.data?.message || error.message);
+    }finally{
+      setLoading(false);
+    }
   };
 
   return (
@@ -99,7 +118,8 @@ type="submit"
 className="w-full bg-violet-800"
 disabled={loading}
 >
-{loading? <Loader className="text-2x1 Itext-white animate-spin"/> : "Create an account"}
+{loading ? <span className="text-2xl text-white animate-spin">⏳</span> : "Create an account"}
+
 </Button>
 
 
