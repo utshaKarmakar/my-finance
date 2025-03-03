@@ -12,6 +12,7 @@ import  {create}  from 'zustand';
 import { setAuthToken } from './libs/apiCall';
 import { Toaster } from 'sonner';
 import Navbar from './components/navbar';
+import useStore from "./store";
 
 const RootLayout = ()=> {
   const {user} = useStore((state)=> state);
